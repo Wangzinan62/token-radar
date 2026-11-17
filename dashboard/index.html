@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Launch Radar — pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="masthead">
+  <div class="masthead-in">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><span></span></div>
+      <div>
+        <h1>Token Launch Radar</h1>
+        <p class="tagline">Every protocol in the snapshot that records no token yet, ranked by what its
+        token would be worth if it priced like its own category. Implied value = TVL &times; the
+        category's market-cap/TVL multiple, adjusted for 7-day momentum, maturity and size.</p>
+      </div>
+    </div>
+    <div class="stats" id="stats" aria-label="Snapshot summary"></div>
+  </div>
+</header>
+
+<main>
+  <section class="controls" aria-label="Board controls">
+    <label class="ctl grow">Search
+      <input id="q" type="search" placeholder="Protocol name or slug" autocomplete="off">
+    </label>
+    <label class="ctl">Category
+      <select id="category"><option value="">All categories</option></select>
+    </label>
+    <label class="ctl">Chain
+      <select id="chain"><option value="">All chains</option></select>
+    </label>
+    <label class="ctl">Sort by
+      <select id="sort">
+        <option value="rank">Rank</option>
+        <option value="implied">Implied value</option>
+        <option value="tvl">TVL</option>
+        <option value="change">7d change</option>
+        <option value="multiple">Value / TVL</option>
+        <option value="name">Name</option>
+      </select>
+    </label>
+    <label class="ctl check">
+      <input id="watchlist-only" type="checkbox"> Watchlist only
+    </label>
+    <p class="count" id="count" role="status"></p>
+  </section>
+
+  <section id="detail" class="detail" hidden></section>
+
+  <section class="board-wrap">
+    <table class="board" id="board">
+      <thead>
+        <tr>
+          <th data-key="rank" class="num">Rank</th>
+          <th data-key="name">Protocol</th>
+          <th data-key="category">Category</th>
+          <th>Chains</th>
+          <th data-key="tvl" class="num">TVL</th>
+          <th data-key="change" class="num">7d change</th>
+          <th data-key="implied" class="num">Implied value</th>
+          <th data-key="multiple" class="num">Value / TVL</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <p class="empty" id="empty" hidden>No protocol matches those filters. Loosen the search or clear a filter to see the board again.</p>
+  </section>
+
+  <section class="method" id="method">
+    <h2>How the radar prices a launch that has not happened</h2>
+    <p>The snapshot's tokenized protocols are the evidence, never the board. For each category the
+    radar takes the median market-cap/TVL ratio of the protocols in it whose tokens already trade —
+    each ratio winsorized to [0.002, 10] first, so one mispriced microcap cannot move a category —
+    and shrinks it toward the global median with weight comps / (comps + 6), so a category with two
+    comparables leans on the market as a whole while one with forty stands mostly on its own. The
+    blended multiple is clamped to [0.02, 2.5]. A pre-token protocol is then priced from its own
+    record alone: TVL times its category multiple, times a momentum factor from its 7-day TVL change
+    (bounded, so a doubling week adds 35% and a halving week removes 17.5%), times a maturity factor
+    that pays up to +25% for four years of operating history without a token, times a size factor
+    that discounts the smallest protocols by up to 7.5%. No protocol name is special-cased: the same
+    arithmetic scores every row, and each row's detail view shows its own numbers.</p>
+    <p>Rows below the watchlist's $50M floor must pass the same product tests the watchlist states —
+    not a bridge, liquid-staking, restaking or exchange category, no version marker or wrapped /
+    staked word in the name — because a wrapped or bridged product of a token that already trades is
+    not a launch still to come. "Records no token" is the snapshot's statement, and the board repeats
+    it in those words: a protocol may carry a token its record does not show.</p>
+    <h3>The multiples the snapshot supports</h3>
+    <div id="multiples"></div>
+  </section>
+
+  <footer>
+    <p id="foot"></p>
+  </footer>
+</main>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
